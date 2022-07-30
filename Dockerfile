@@ -1,25 +1,19 @@
-FROM golang:1.16.3-stretch AS builder
-LABEL AUTHOR Seungkyu Ahn (seungkyua@gmail.com)
+FROM node:15.12.0-alpine3.12
 
-RUN mkdir -p /build
-WORKDIR /build
+# 앱 디렉터리 생성
+WORKDIR /usr/src/app
 
+# 앱 의존성 설치
+# 가능한 경우(npm@5+) package.json과 package-lock.json을 모두 복사하기 위해
+# 와일드카드를 사용
+COPY package*.json ./
+
+RUN npm install
+# 프로덕션을 위한 코드를 빌드하는 경우
+# RUN npm ci --only=production
+
+# 앱 소스 추가
 COPY . .
-RUN go mod tidy && go mod vendor
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/server ./cmd/server
 
-RUN mkdir -p /dist
-WORKDIR /dist
-RUN cp /build/bin/server ./server
-
-
-FROM golang:alpine3.13
-
-RUN mkdir -p /app
-WORKDIR /app
-
-COPY --chown=0:0 --from=builder /dist /app/
-EXPOSE 9111
-
-ENTRYPOINT ["/app/server"]
-CMD ["-port", "9110"]
+EXPOSE 8080
+CMD [ "node", "server.js" ]
