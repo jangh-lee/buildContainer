@@ -1,15 +1,10 @@
-'use strict';
-
 const express = require('express');
-
-// 상수
 const PORT = 8081;
 const HOST = '0.0.0.0';
 
-// 앱
 const app = express();
 app.get('/', (req, res) => {
-  res.send('이제 이장훈이 업그레이드한다!');
+  res.send('Project github를 통한 CI/CD 파이프라인 구축');
 });
 
 app.listen(PORT, HOST);
